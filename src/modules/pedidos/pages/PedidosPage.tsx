@@ -1,4 +1,4 @@
-import { useAuthStore } from "@/stores/useAuthStore";
+import { useAuthStore } from "@/stores/authStore";
 import { usePedidos, useCambiarEstado } from "../hooks/usePedidos";
 import { PedidosTable } from "../components/PedidosTable";
 import type { CambioEstadoRequest } from "@/api/pedidosApi";

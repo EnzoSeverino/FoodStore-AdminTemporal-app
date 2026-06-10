@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useAuthStore } from "@/stores/useAuthStore"
+import { useAuthStore } from "@/stores/authStore"
 import { useProductos, useCreateProducto, useUpdateProducto,useDeleteProducto, useUpdateDisponibilidad } from "../hooks/useProductos"
 import { useCategorias } from "@/modules/categorias/hooks/useCategorias"
 import { useIngredientes } from "@/modules/ingredientes/hooks/useIngredientes"

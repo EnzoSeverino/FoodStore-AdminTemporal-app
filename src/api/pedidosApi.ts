@@ -1,56 +1,50 @@
 import apiClient from "./axiosInstance";
-
-export interface EstadoPedido {
-    id: number
-    codigo: string
-    nombre: string
-    orden: number
-}
-
-export interface FormaPago {
-    id: number
-    nombre: string
-    codigo: string
-}
-
-export interface DetallePedido {
-    id: number
-    producto_id: number
-    nombre_producto: string
-    precio_unitario: number
-    cantidad: number
-    subtotal: number
-}
-
-export interface Pedido {
-    id: number
-    usuario_id: number
-    fecha_pedido: string
-    estado_actual_id: number
-    forma_pago_id: number
-    total: number
-    detalles: DetallePedido[]
-    estado_actual: EstadoPedido | null
-    forma_pago: FormaPago | null
-}
-
-export interface CambioEstadoRequest {
-    nuevo_estado_id: number
-    observacion?: string
-}
+import type { 
+    PedidoRead,
+    PedidoDetail,
+    EstadoPedido,
+    HistorialEstadoPedido,
+    AvanzarEstadoRequest,
+} from "@/types/pedido";
+import type { PaginatedResponse } from "@/types/api";
 
 const PEDIDOS = '/pedidos'
 
-export async function getPedidos(): Promise<Pedido[]> {
-    const response = await apiClient.get<Pedido[]>(PEDIDOS)
+// ─── GET /api/v1/pedidos
+export async function getPedidos(params?: {
+    page?: number
+    size?: number
+    estado_codigo?: string
+}): Promise<PaginatedResponse<PedidoRead>> {
+    const response = await apiClient.get<PaginatedResponse<PedidoRead>>(PEDIDOS, { params })
     return response.data
 }
 
-export async function cambiarEstado(id: number, data: CambioEstadoRequest): Promise<Pedido> {
-    const response = await apiClient.patch<Pedido>(`${PEDIDOS}/${id}/estado`, data)
+// ─── GET /api/v1/pedidos/{id} 
+export async function getPedidoById(id: number): Promise<PedidoDetail> {
+    const response = await apiClient.get<PedidoDetail>(`${PEDIDOS}/${id}`)
     return response.data
 }
 
+// ─── PATCH /api/v1/pedidos/{id}/estado
+export async function avanzarEstado(id: number, data: AvanzarEstadoRequest): Promise<PedidoRead> {
+    const response = await apiClient.patch<PedidoRead>(`${PEDIDOS}/${id}/estado`, data)
+    return response.data
+}
+
+// ─── GET /api/v1/pedidos/{id}/historial 
+export async function getHistorialPedido(pedidoId: number): Promise<HistorialEstadoPedido[]> {
+    const response = await apiClient.get<HistorialEstadoPedido[]>(`${PEDIDOS}/${pedidoId}/historial`)
+    return response.data
+}
+
+// ─── DELETE /api/v1/pedidos/{id}
+export async function cancelarPedido(id: number): Promise<PedidoRead> {
+    const response = await apiClient.delete<PedidoRead>(`${PEDIDOS}/${id}`)
+    return response.data
+}
+
+// ─── GET /api/v1/pedidos/{id}/estados-posibles
 export async function getEstadosPosibles(id: number): Promise<EstadoPedido[]> {
     const response = await apiClient.get<EstadoPedido[]>(`${PEDIDOS}/${id}/estados-posibles`)
     return response.data

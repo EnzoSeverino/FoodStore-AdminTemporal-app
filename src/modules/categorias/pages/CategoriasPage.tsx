@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAuthStore } from "@/stores/useAuthStore";
+import { useAuthStore } from "@/stores/authStore";
 import { useCategorias, useCreateCategoria, useUpdateCategoria, useDeleteCategoria } from "../hooks/useCategorias";
 import { CategoriasTable } from "../components/CategoriasTable";
 import { CategoriaModal } from "../components/CategoriaModal";

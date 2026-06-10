@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAuthStore } from "@/stores/useAuthStore";
+import { useAuthStore } from "@/stores/authStore";
 import { useIngredientes, useCreateIngrediente, useUpdateIngrediente, useDeleteIngrediente } from "../hooks/useIngredientes";
 import { IngredientesTable } from "../components/IngredientesTable";
 import { IngredienteModal } from "../components/IngredienteModal";
