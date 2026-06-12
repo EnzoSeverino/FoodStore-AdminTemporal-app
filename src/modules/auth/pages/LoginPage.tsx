@@ -8,7 +8,7 @@ export function LoginPage() {
   const error = useAuthStore((s) => s.error)
   const setError = useAuthStore((s) => s.setError)
 
-  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
@@ -17,7 +17,7 @@ export function LoginPage() {
     setIsLoading(true)
     setError(null)
     try {
-      await login(username, password)
+      await login(email, password)
       navigate('/dashboard')
     } catch {
       // el error ya está en el store
@@ -54,8 +54,8 @@ export function LoginPage() {
               <span className="mr-2 text-slate-400">✉</span>
               <input
                 type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={isLoading}
                 className="flex-1 text-sm text-slate-900 placeholder-slate-400 focus:outline-none disabled:bg-white"
