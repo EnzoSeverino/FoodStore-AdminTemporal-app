@@ -1,6 +1,5 @@
 import { useEffect, useRef, useCallback } from 'react'
 import { useWsStore } from '@/stores/wsStore'
-import { useAuthStore } from '@/stores/authStore'
 
 // ─── URL base del WebSocket 
 function getWsUrl(): string {
@@ -62,41 +61,27 @@ export function useWebSocket({
         const connect = () => {
             if (cancelled) return
 
-            // Obtener el access token del authStore
-            // Si no hay token, no conectamos (usuario no autenticado)
-            const token = useAuthStore.getState().user
-                ? document.cookie
-                .split('; ')
-                .find((row) => row.startsWith('access_token='))
-                ?.split('=')[1]
-            : null
-
-            // Construir URL con o sin token según disponibilidad
-            const baseUrl = getWsUrl()
-            const url = token ? `${baseUrl}?token=${token}` : baseUrl
+            // La cookie httpOnly viaja automáticamente en el handshake HTTP → WS.
+            // No hace falta pasar el token manualmente.
+            const url = getWsUrl()
 
             const ws = new WebSocket(url)
             currentWs = ws
             wsRef.current = ws
 
-            // Actualizar store: conectando
             setStatus('connecting')
 
-            // ─── onopen 
             ws.onopen = () => {
                 if (cancelled) {
                     ws.close(1000)
-                    return
+                return
                 }
                 retryCount = 0
                 resetRetry()
                 setStatus('connected')
-
-                // Evento sintético para que las páginas recarguen datos
                 onMessageRef.current?.({ event: 'WS_CONNECTED', data: null })
             }
 
-            // ─── onmessage 
             ws.onmessage = (event) => {
                 if (cancelled) return
                 try {
@@ -107,12 +92,10 @@ export function useWebSocket({
                 }
             }
 
-            // ─── onerror 
             ws.onerror = () => {
                 setStatus('error')
             }
 
-            // ─── onclose 
             ws.onclose = (e) => {
                 if (wsRef.current === ws) wsRef.current = null
                 currentWs = null
@@ -125,14 +108,15 @@ export function useWebSocket({
                     return
                 }
 
-                // Reconexión con backoff exponencial
                 setStatus('connecting')
                 retryCount++
                 incrementRetry()
                 const delay = Math.min(1000 * 2 ** retryCount, 30_000)
-                console.warn(`[WS] Reconectando en ${delay / 1000}s (intento ${retryCount})`)
+                console.warn(
+                    `[WS] Reconectando en ${delay / 1000}s (intento ${retryCount})`,
+                )
                 retryTimer = setTimeout(connect, delay)
-            }
+                }
         }
 
         connect()
