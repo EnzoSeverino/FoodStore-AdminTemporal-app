@@ -3,18 +3,18 @@ import {
   getCoreRowModel,
   flexRender,
   createColumnHelper,
-} from '@tanstack/react-table'
-import type { Categoria } from '@/api/categoriasApi'
+} from "@tanstack/react-table";
+import type { Categoria } from "@/types/categoria";
 
 interface CategoriasTableProps {
-  data: Categoria[]
-  categorias: Categoria[]
-  isAdmin: boolean
-  onEdit: (categoria: Categoria) => void
-  onDelete: (id: number) => void
+  data: Categoria[];
+  categorias: Categoria[];
+  isAdmin: boolean;
+  onEdit: (categoria: Categoria) => void;
+  onDelete: (id: number) => void;
 }
 
-const columnHelper = createColumnHelper<Categoria>()
+const columnHelper = createColumnHelper<Categoria>();
 
 export function CategoriasTable({
   data,
@@ -24,40 +24,57 @@ export function CategoriasTable({
   onDelete,
 }: CategoriasTableProps) {
   const columns = [
-    columnHelper.accessor('id', {
-      header: 'ID',
+    columnHelper.accessor("id", {
+      header: "ID",
       cell: (info) => (
         <span className="text-slate-400 text-xs">#{info.getValue()}</span>
       ),
     }),
-    columnHelper.accessor('nombre', {
-      header: 'Nombre',
+    columnHelper.accessor("imagen_url", {
+      header: "Imagen",
+      cell: (info) => {
+        const url = info.getValue();
+        return url ? (
+          <img
+            src={url}
+            alt="Categoría"
+            className="h-10 w-10 rounded-lg object-cover border border-slate-200"
+          />
+        ) : (
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-dashed border-slate-300 bg-slate-50">
+            <span className="text-xs text-slate-400">—</span>
+          </div>
+        );
+      },
+    }),
+    columnHelper.accessor("nombre", {
+      header: "Nombre",
       cell: (info) => (
         <span className="font-medium text-slate-900">{info.getValue()}</span>
       ),
     }),
-    columnHelper.accessor('descripcion', {
-      header: 'Descripción',
+    columnHelper.accessor("descripcion", {
+      header: "Descripción",
       cell: (info) => (
-        <span className="text-slate-500">{info.getValue() ?? '—'}</span>
+        <span className="text-slate-500">{info.getValue() ?? "—"}</span>
       ),
     }),
-    columnHelper.accessor('parent_id', {
-      header: 'Categoría Padre',
+    columnHelper.accessor("parent_id", {
+      header: "Categoría Padre",
       cell: (info) => {
-        const parentId = info.getValue()
-        if (!parentId) return <span className="text-slate-400">—</span>
-        const parent = categorias.find((c) => c.id === parentId)
+        const parentId = info.getValue();
+        if (!parentId) return <span className="text-slate-400">—</span>;
+        const parent = categorias.find((c) => c.id === parentId);
         return (
           <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-medium text-slate-600">
             {parent ? parent.nombre : parentId}
           </span>
-        )
+        );
       },
     }),
     columnHelper.display({
-      id: 'acciones',
-      header: 'Acciones',
+      id: "acciones",
+      header: "Acciones",
       cell: (info) =>
         isAdmin ? (
           <div className="flex gap-2">
@@ -76,13 +93,13 @@ export function CategoriasTable({
           </div>
         ) : null,
     }),
-  ]
+  ];
 
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-  })
+  });
 
   return (
     <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
@@ -116,10 +133,7 @@ export function CategoriasTable({
             </tr>
           ) : (
             table.getRowModel().rows.map((row) => (
-              <tr
-                key={row.id}
-                className="hover:bg-slate-50 transition-colors"
-              >
+              <tr key={row.id} className="hover:bg-slate-50 transition-colors">
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id} className="px-5 py-4 text-slate-700">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -131,5 +145,5 @@ export function CategoriasTable({
         </tbody>
       </table>
     </div>
-  )
+  );
 }
